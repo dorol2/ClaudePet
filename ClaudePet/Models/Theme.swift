@@ -19,7 +19,7 @@ struct Theme: Identifiable, Codable, Equatable {
 }
 
 enum ThemeCatalog {
-    static let builtin: [Theme] = [.default]
+    static let builtin: [Theme] = [.default, .cody]
 }
 
 extension Theme {
@@ -34,6 +34,19 @@ extension Theme {
         motions: defaultMotions(),
         thinkingVerbs: PetTheme.defaultThinkingVerbs,
         bundledImagePrefix: nil
+    )
+
+    /// 번들의 ClaudePet/Samples/ 안 이미지 7종 (idle / waiting / done / tool /
+    /// typing / thinking / permission)을 자동 적용. per-tool 분리 이미지는 없으므로
+    /// Bash/Write/Edit 등은 unified tool.png를 폴백으로 사용.
+    static let cody: Theme = Theme(
+        id: "cody",
+        name: "Cody",
+        themeDescription: "기본 제공 펫 캐릭터 Cody. 7개 motion 이미지 자동 적용.",
+        isBuiltin: true,
+        motions: defaultMotions(),
+        thinkingVerbs: PetTheme.defaultThinkingVerbs,
+        bundledImagePrefix: ""    // 번들 루트에서 직접 찾음 (Xcode가 Samples/ 내용을 플랫하게 복사)
     )
 
     private static func defaultMotions() -> [String: MotionStyle] {
