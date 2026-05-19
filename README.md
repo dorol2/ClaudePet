@@ -1,6 +1,10 @@
 <h1 align="center">🐾 ClaudePet</h1>
 
 <p align="center">
+  <img src="ClaudePet/Samples/idle.png" width="160" alt="ClaudePet idle (Cody)">
+</p>
+
+<p align="center">
   <em>Claude Code 세션과 함께 살아 움직이는 macOS 데스크탑 펫</em>
 </p>
 
@@ -8,7 +12,7 @@
   <img src="https://img.shields.io/badge/platform-macOS%2013%2B-lightgrey" alt="Platform">
   <img src="https://img.shields.io/badge/Swift-6-orange" alt="Swift 6">
   <img src="https://img.shields.io/badge/SwiftUI%20%2B%20AppKit-blue" alt="SwiftUI + AppKit">
-  <a href="https://github.com/miseon-medit/claude_pet/releases/latest"><img src="https://img.shields.io/github/v/release/miseon-medit/claude_pet" alt="Release"></a>
+  <a href="https://github.com/dorol2/ClaudePet/releases/latest"><img src="https://img.shields.io/github/v/release/dorol2/ClaudePet" alt="Release"></a>
 </p>
 
 ---
@@ -17,38 +21,10 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 
 긴 작업을 시작하고 자리를 비워도 펫이 모션으로 알려주고, 권한 요청이 오면 색이 바뀌고, 응답이 끝나면 축하 모션을 보여줍니다. 색·이모지·이미지·말풍선 등을 모두 사용자 정의할 수 있습니다.
 
-## 🆕 최근 업데이트 — [v0.2.1](https://github.com/miseon-medit/claude_pet/releases/tag/v0.2.1)
-
-#### 🎛️ Waiting 모션 UX 개선
-- **사용 토글** — Preferences → 모션 → Waiting 맨 위 "Waiting 모션 사용" 체크박스. 끄면 waiting 이벤트 완전 무시 (다른 모션은 영향 없음).
-- **진입 지연 0~3600초 (1시간)** — 슬라이더 제거, 숫자 직접 입력. 잠깐 자리 비울 때만 알림 받고 싶을 때 유용.
-- **Typing 중 응답 인식** — waiting 상태에서 키 입력이 들어오면 사용자가 응답한 것으로 간주, typing 모션 → 종료 후 idle (waiting 복귀 X). Preferences → 타이핑 → 동작 옵션에서 토글.
-
-#### 🪝 Claude Code 훅 매핑 개선
-- **Notification 메시지 자동 분기** — `permission/approval` 키워드 → 🙋 permission 모션, `denied/cancel/interrupt/abort` 키워드 → `cancel` 이벤트, 그 외 → waiting.
-- **세션별 done 스킵** — `cancel` 직후 2초 내 같은 세션의 Stop이 와도 축하 모션 스킵 (권한 거부 후 Claude 마무리 응답에서 done 안 뜨도록). 여러 Claude 세션 동시 작업 시 세션 간 신호 간섭 없음.
-
-#### 🛠️ 입력 UX
-- **모든 duration 직접 입력** — done/tool/typing/thinking 등 유지 시간 슬라이더 옆에 숫자 입력 필드 추가 (clamp 처리).
-
-#### 🐛 버그 수정
-- 이미지 변경/선택 버튼이 클릭해도 반응 없던 문제 (sandbox 앱 `user-selected.read-write` entitlement 누락 + LSUIElement 앱의 NSOpenPanel 포커스 문제).
-- `clear` 이벤트가 thinking 상태를 해소하지 않던 빈틈.
-- Xcode 자동 서명 설정 통합 (`DEVELOPMENT_TEAM` 일원화).
-
-### 이전: [v0.2.0](https://github.com/miseon-medit/claude_pet/releases/tag/v0.2.0)
-
-- 🎨 **외형 프리셋(테마) 시스템** — 빌트인 Default 테마 + 사용자 정의 테마 추가/수정/삭제. 메뉴바 🐾 → Theme 서브메뉴에서 빠른 전환.
-- 📍 **위치 영속화** — 펫을 드래그한 마지막 위치 자동 저장, 재실행 시 같은 자리에 복귀.
-- 🚀 **로그인 시 자동 시작** — `SMAppService` 기반 토글.
-- ⌨️ **터미널 키 입력 감지 개선** — 감지 대상 bundle ID 목록을 Preferences에서 직접 편집.
-- 🎨 **Preferences UI 개편** — NavigationSplitView 사이드바, 모션별 페이지, Tool 통합/분리 토글, 사이드바 아이콘 개편, README 가독성 개편.
-
-전체 변경 이력은 [Releases 페이지](https://github.com/miseon-medit/claude_pet/releases) 참고.
-
 ## 📑 목차
 
 - [✨ 기능](#-기능)
+- [🎬 모션 미리보기](#-모션-미리보기)
 - [🚀 시작하기](#-시작하기)
 - [⚙️ Preferences](#️-preferences)
 - [🔌 Claude Code 훅 매핑](#-claude-code-훅-매핑)
@@ -100,7 +76,32 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 
 **모션 우선순위**: `permission` > `done` > `tool` > `waiting` > `thinking` > `typing` > `idle`
 
-> 기본 빌트인 테마는 **이모지 + 그라데이션 배경**(이미지 없음). 본인 이미지/GIF는 Preferences에서 모션마다 직접 등록할 수 있습니다.
+> 빌트인 테마 2종 제공:
+> - **Default** — 이모지 + 그라데이션 배경 (이미지 없음, 기본 활성)
+> - **Cody** — 자체 제작 펫 캐릭터 이미지 7종 자동 적용
+>
+> 본인 이미지/GIF로 커스텀 테마 만드는 것도 Preferences에서 가능합니다.
+
+---
+
+## 🎬 모션 미리보기
+
+빌트인 `Cody` 테마의 모션별 이미지 (메뉴바 🐾 → Theme → Cody 선택 시 자동 적용):
+
+<table>
+  <tr>
+    <td align="center"><img src="ClaudePet/Samples/idle.png" width="100"><br><sub><b>idle</b><br>대기</sub></td>
+    <td align="center"><img src="ClaudePet/Samples/waiting.png" width="100"><br><sub><b>waiting</b><br>입력 대기</sub></td>
+    <td align="center"><img src="ClaudePet/Samples/done.png" width="100"><br><sub><b>done</b><br>완료</sub></td>
+    <td align="center"><img src="ClaudePet/Samples/thinking.png" width="100"><br><sub><b>thinking</b><br>생각 중</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="ClaudePet/Samples/tool.png" width="100"><br><sub><b>tool</b><br>도구 실행</sub></td>
+    <td align="center"><img src="ClaudePet/Samples/typing.png" width="100"><br><sub><b>typing</b><br>타이핑</sub></td>
+    <td align="center"><img src="ClaudePet/Samples/permission.png" width="100"><br><sub><b>permission</b><br>권한 요청</sub></td>
+    <td align="center"><sub><b>idle</b>로 폴백</sub></td>
+  </tr>
+</table>
 
 ---
 
@@ -110,7 +111,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 
 ### 1️⃣ 다운로드 & 설치
 
-[**GitHub Releases**](https://github.com/miseon-medit/claude_pet/releases/latest)에서 최신 `ClaudePet-vX.Y.Z.zip` 받기.
+[**GitHub Releases**](https://github.com/dorol2/ClaudePet/releases/latest)에서 최신 `ClaudePet-vX.Y.Z.zip` 받기.
 
 압축 해제 후 `ClaudePet.app`을 `/Applications/`로 드래그 (또는 아래 명령):
 
@@ -139,11 +140,11 @@ mv ~/Downloads/ClaudePet.app /Applications/
 
 ### 4️⃣ 펫 외형 커스터마이즈 *(선택)*
 
-기본 이모지 + 그라데이션 외에 본인 이미지/GIF를 펫으로 쓰고 싶다면:
+세 가지 방법:
 
-1. **🐾 메뉴바 → Preferences → 모션** (Idle/Waiting/Done/Tool/Thinking/Permission/Typing 각 페이지)
-2. 페이지의 **"이미지 선택…"** 버튼으로 PNG/GIF/APNG/JPG 등 등록
-3. (선택) Preferences → **테마** 페이지의 "현재 설정 저장…"으로 사용자 정의 테마로 묶어서 저장 → 메뉴바 🐾 → Theme 서브메뉴에서 빠르게 전환
+1. **빌트인 `Cody` 테마 바로 적용** — 메뉴바 🐾 → Theme → **Cody** 클릭. 캐릭터 7종이 자동 적용됨.
+2. **본인 이미지/GIF 등록** — 메뉴바 🐾 → Preferences → 모션 (Idle/Waiting/Done/Tool/Thinking/Permission/Typing 각 페이지) → **"이미지 선택…"** 버튼으로 PNG/GIF/APNG/JPG 등 등록.
+3. **사용자 정의 테마 저장** — Preferences → **테마** 페이지의 "현재 설정 저장…"으로 묶어서 저장 → 메뉴바 🐾 → Theme 서브메뉴에서 빠르게 전환.
 
 > GIF의 경우 NSImageView가 자동 재생합니다.
 
@@ -231,8 +232,8 @@ mv ~/Downloads/ClaudePet.app /Applications/
 요구사항: macOS 13+, Xcode 16+
 
 ```bash
-git clone https://github.com/miseon-medit/claude_pet.git
-cd claude_pet
+git clone https://github.com/dorol2/ClaudePet.git
+cd ClaudePet
 open ClaudePet.xcodeproj    # Xcode에서 Cmd+R
 
 # 또는 커맨드라인
@@ -298,10 +299,10 @@ ClaudePet/                              ← 리포 루트
 │   │   ├── ImageStore.swift            이미지 영속 저장
 │   │   ├── ThemeStore.swift            사용자 정의 테마 영속 저장
 │   │   └── LogStore.swift              개발자 페이지용 로그 버퍼
+│   ├── Samples/                        빌트인 Cody 테마 이미지 (PNG 7장)
 │   ├── Assets.xcassets/
 │   └── ClaudePet.entitlements
-├── ClaudePetTests/                     unit tests (Swift Testing)
-├── ClaudePetUITests/                   UI tests (XCUITest)
+├── ClaudePetTests/                     unit tests (Swift Testing, 35개)
 ├── .claude/settings.json               Claude Code 훅 매핑 예시
 └── README.md
 ```
@@ -334,6 +335,6 @@ ClaudePet/                              ← 리포 루트
 
 ## 📄 라이선스
 
-별도 LICENSE 파일 추가 전까지는 개인 학습/사용 용도로 fork/수정 권장.
+별도 LICENSE 파일 추가 전까지는 개인 학습/사용 용도로 fork/수정 권장 (MIT 등 추후 추가 예정).
 
-> 펫 이미지는 기본 제공되지 않습니다. 본인 이미지/GIF를 Preferences에서 직접 등록해서 사용하세요.
+> 번들 포함 빌트인 펫 캐릭터 (`Cody` — `ClaudePet/Samples/*.png`)는 본 리포 작성자가 직접 제작했으며, 코드 라이선스에 함께 따릅니다. 본인 이미지/GIF로 교체하고 싶으면 Preferences에서 등록 가능.
