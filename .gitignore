@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific
+xcuserdata/
+**/*.xcuserstate
+
+# Xcode build
+build/
+DerivedData/
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Package.resolved
+
+# Release artifacts
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Misc
+*.log
+
+# oh-my-claudecode 플러그인 세션/상태 데이터 (개인 정보 포함 가능)
+.omc/

@@ -1,0 +1,76 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "INPUT=$(cat); TYPE=$(echo \"$INPUT\" | jq -r 'if (.message // \"\") | test(\"denied|declined|rejected|cancel|interrupt|abort\"; \"i\") then \"cancel\" elif (.message // \"\") | test(\"permission|approval|approve|permit\"; \"i\") then \"permission\" else \"waiting\" end'); echo \"$INPUT\" | jq -r --arg t \"$TYPE\" '\"type=\\($t)&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)&message=\\(.message // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"type=done&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "DATA=$(jq -r '\"session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)\"'); curl -sS -X POST -d \"type=clear&$DATA\" http://127.0.0.1:9876/event >/dev/null 2>&1; curl -sS -X POST -d \"type=thinking&$DATA\" http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"type=tool&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"type=permission&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+          }
+        ]
+      }
+    ]
+  }
+}
