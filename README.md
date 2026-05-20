@@ -1,7 +1,7 @@
 <h1 align="center">🐾 ClaudePet</h1>
 
 <p align="center">
-  <img src="ClaudePet/Samples/idle.png" width="160" alt="ClaudePet idle (Claunyang / 클로냥)">
+  <img src="ClaudePet/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="160" alt="ClaudePet 앱 아이콘">
 </p>
 
 <p align="center">
