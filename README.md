@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/Swift-6-orange" alt="Swift 6">
   <img src="https://img.shields.io/badge/SwiftUI%20%2B%20AppKit-blue" alt="SwiftUI + AppKit">
   <a href="https://github.com/dorol2/ClaudePet/releases/latest"><img src="https://img.shields.io/github/v/release/dorol2/ClaudePet" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/dorol2/ClaudePet" alt="License"></a>
 </p>
 
 ---
@@ -65,6 +66,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 - 떠다니는 NSPanel
 - 드래그 + 위치 자동 저장
 - 메뉴바 아이콘 🐾
+- About 패널 (버전 정보)
 - 로그인 시 자동 시작
 - 로컬 HTTP 서버
 - 멀티 세션 추적
@@ -99,7 +101,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
     <td align="center"><img src="ClaudePet/Samples/tool.png" width="100"><br><sub><b>tool</b><br>도구 실행</sub></td>
     <td align="center"><img src="ClaudePet/Samples/typing.png" width="100"><br><sub><b>typing</b><br>타이핑</sub></td>
     <td align="center"><img src="ClaudePet/Samples/permission.png" width="100"><br><sub><b>permission</b><br>권한 요청</sub></td>
-    <td align="center"><sub><b>idle</b>로 폴백</sub></td>
+    <td align="center"><sub>tool 모션의 도구별 분리 스타일<br>(Bash/Write/Edit/WebFetch/<br>WebSearch)은 미포함 →<br>unified <code>tool.png</code>로 폴백</sub></td>
   </tr>
 </table>
 
@@ -129,6 +131,20 @@ mv ~/Downloads/ClaudePet.app /Applications/
 3. 이후엔 더블클릭으로 그냥 실행됨
 
 ✅ 실행되면 메뉴바에 **🐾 아이콘**이 뜨고 화면 우측 하단에 펫이 떠다닙니다.
+
+🐾 아이콘 클릭 시 메뉴:
+
+```
+Show / Hide Pet    ⌘H
+Reset Position
+─────────
+Theme              ▶  (Default / 클로냥 / 사용자 정의 테마…)
+─────────
+Preferences…       ⌘,
+─────────
+About ClaudePet         (버전 정보 확인)
+Quit ClaudePet     ⌘Q
+```
 
 ### 3️⃣ Claude Code 훅 연동
 
@@ -170,7 +186,7 @@ mv ~/Downloads/ClaudePet.app /Applications/
 모션
   Idle / Waiting / Done / Tool / Thinking / Permission / Typing
 기타
-  말풍선 / 일반
+  일반 / 말풍선 / 테마
 개발자
   로그
 ```
@@ -188,8 +204,10 @@ mv ~/Downloads/ClaudePet.app /Applications/
 | **Tool** | 통합/분리 토글 + 세그먼티드 피커 (통합·Bash·Write·Edit·WebFetch·WebSearch) |
 | **Waiting** | 진입 지연 숫자 입력 (0~3600초 / 1시간) |
 | **Thinking** | Verb 리스트 편집기 (1.5초마다 순환) |
-| **Typing** | 키 입력 감지 토글 + bundle ID 목록 편집기 |
+| **Typing** | 키 입력 감지 토글 + bundle ID 목록 편집기 + Waiting 중 Typing 우선 처리 |
 | **일반** | 펫 크기 (S/M/L), 로그인 시 자동 시작, 기본값으로 리셋 |
+| **말풍선** | 마스터 토글 (모든 motion의 말풍선 일괄 ON/OFF) |
+| **테마** | 빌트인 / 사용자 정의 테마 카드 목록 + "현재 설정 저장…" + Finder에서 보기 |
 | **개발자** | 실시간 HTTP 로그 토글 (최대 300개, 자동 스크롤) |
 
 ### 말풍선 템플릿 변수
@@ -317,6 +335,7 @@ ClaudePet/                              ← 리포 루트
 │   └── ClaudePet.entitlements
 ├── ClaudePetTests/                     unit tests (Swift Testing, 35개)
 ├── .claude/settings.json               Claude Code 훅 매핑 예시
+├── LICENSE                             MIT License
 └── README.md
 ```
 
@@ -327,10 +346,11 @@ ClaudePet/                              ← 리포 루트
 
 | 데이터 | 위치 |
 |--------|------|
-| 테마 설정 (색/이모지/시간/이미지경로/토글/터미널 bundle ID 등) | `UserDefaults` 키 `petTheme.v1` (JSON) |
+| 테마 설정 (motions dict / 색·이모지 / duration / 토글 / 터미널 bundle ID 등) | `UserDefaults` 키 `petTheme.v1` (JSON) |
 | 펫 윈도우 마지막 위치 | `UserDefaults` 키 `ClaudePet.panelOrigin` |
-| 사용자 지정 이미지 | `~/Library/Application Support/ClaudePet/images/` |
-| 훅 매핑 | `.claude/settings.json` 또는 `~/.claude/settings.json` |
+| 사용자 지정 이미지 | `~/Library/Containers/ring.ClaudePet/Data/Library/Application Support/ClaudePet/images/` (App Sandbox) |
+| 사용자 정의 테마 (JSON + 이미지) | `~/Library/Containers/ring.ClaudePet/Data/Library/Application Support/ClaudePet/themes/` |
+| 훅 매핑 | `.claude/settings.json` (프로젝트별) 또는 `~/.claude/settings.json` (글로벌) |
 | 로그인 항목 등록 상태 | `SMAppService` (macOS 시스템 관리) |
 
 </details>
