@@ -217,10 +217,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(withTitle: "Preferences…", action: #selector(openPreferences), keyEquivalent: ",")
             .target = self
         menu.addItem(.separator())
+        menu.addItem(withTitle: "About ClaudePet", action: #selector(showAbout), keyEquivalent: "")
+            .target = self
         menu.addItem(withTitle: "Quit ClaudePet", action: #selector(quit), keyEquivalent: "q")
             .target = self
         item.menu = menu
         self.statusItem = item
+    }
+
+    @objc private func showAbout() {
+        // LSUIElement 앱이라 About panel을 띄울 때 앱 활성화 필요
+        NSApp.activate(ignoringOtherApps: true)
+        let credits = NSAttributedString(
+            string: "Claude Code 세션과 함께 살아 움직이는 macOS 데스크탑 펫\nhttps://github.com/dorol2/ClaudePet",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 11),
+                .foregroundColor: NSColor.secondaryLabelColor,
+            ]
+        )
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .credits: credits,
+        ])
     }
 
     private func refreshThemesSubmenu() {
