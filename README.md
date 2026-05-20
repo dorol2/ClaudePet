@@ -348,6 +348,8 @@ ClaudePet/                              ← 리포 루트
 
 ## 📄 라이선스
 
-별도 LICENSE 파일 추가 전까지는 개인 학습/사용 용도로 fork/수정 권장 (MIT 등 추후 추가 예정).
+**MIT License** — 자세한 조건은 [LICENSE](LICENSE) 파일 참고.
 
-> 번들 포함 빌트인 펫 캐릭터 (`클로냥 / Claunyang` — `ClaudePet/Samples/*.png`)는 본 리포 작성자가 직접 제작했으며, 코드 라이선스에 함께 따릅니다. 본인 이미지/GIF로 교체하고 싶으면 Preferences에서 등록 가능.
+Copyright (c) 2026 dorol2
+
+> 번들 포함 빌트인 펫 캐릭터 (`클로냥 / Claunyang` — `ClaudePet/Samples/*.png`)는 본 리포 작성자가 직접 제작했으며, MIT License에 함께 따릅니다. 본인 이미지/GIF로 교체하고 싶으면 Preferences에서 등록 가능.
