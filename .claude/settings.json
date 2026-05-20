@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "INPUT=$(cat); TYPE=$(echo \"$INPUT\" | jq -r 'if (.message // \"\") | test(\"denied|declined|rejected|cancel|interrupt|abort\"; \"i\") then \"cancel\" elif (.message // \"\") | test(\"permission|approval|approve|permit\"; \"i\") then \"permission\" else \"waiting\" end'); echo \"$INPUT\" | jq -r --arg t \"$TYPE\" '\"type=\\($t)&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)&message=\\(.message // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "INPUT=$(cat); TYPE=$(printf '%s' \"$INPUT\" | jq -r 'if (.message // \"\") | test(\"denied|declined|rejected|cancel|interrupt|abort\"; \"i\") then \"cancel\" elif (.message // \"\") | test(\"permission|approval|approve|permit\"; \"i\") then \"permission\" else \"waiting\" end'); printf '%s' \"$INPUT\" | jq -r --arg t \"$TYPE\" '\"type=\\($t)&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"type=done&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "jq -r '\"type=done&session=\\(.session_id|@uri)&label=\\(.cwd|split(\"/\")|last|@uri)&hook=\\(.hook_event_name|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }
@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"type=tool&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "jq -r '\"type=tool&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name|@uri)&hook=\\(.hook_event_name|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"type=permission&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "jq -r '\"type=permission&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | xargs -I{} curl -sS -X POST -d '{}' http://127.0.0.1:9876/event >/dev/null 2>&1"
+            "command": "jq -r '\"type=permission_resolved&session=\\(.session_id|@uri)&label=\\(.tool_name // \"\"|@uri)&hook=\\(.hook_event_name|@uri)&tool=\\(.tool_name // \"\"|@uri)\"' | curl -sS -X POST --data-binary @- http://127.0.0.1:9876/event >/dev/null 2>&1"
           }
         ]
       }

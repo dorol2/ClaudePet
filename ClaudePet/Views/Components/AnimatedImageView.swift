@@ -40,10 +40,18 @@ struct AnimatedImageView: NSViewRepresentable {
         proposal.replacingUnspecifiedDimensions(by: CGSize(width: 70, height: 70))
     }
 
+    /// 단일 이미지 파일 크기 상한 (GIF bomb 등 메모리 폭주 방어).
+    /// 25 MB는 일반적인 GIF/PNG/HEIC 펫 이미지 용도엔 충분히 큼.
+    private static let maxImageBytes: Int = 25 * 1024 * 1024
+
     func updateNSView(_ nsView: NSImageView, context: Context) {
         // 같은 파일이면 재할당하지 않아 애니메이션 끊김 방지
         if context.coordinator.loadedPath == filePath { return }
-        guard FileManager.default.fileExists(atPath: filePath),
+
+        // 파일 크기 가드 — NSImage 로드 전에 검사하여 디코딩 단계에서의 OOM 차단
+        let attrs = try? FileManager.default.attributesOfItem(atPath: filePath)
+        let size = (attrs?[.size] as? Int) ?? -1
+        guard size > 0, size <= Self.maxImageBytes,
               let img = NSImage(contentsOfFile: filePath) else {
             nsView.image = nil
             context.coordinator.loadedPath = nil

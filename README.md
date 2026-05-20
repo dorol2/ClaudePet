@@ -158,6 +158,8 @@ mv ~/Downloads/ClaudePet.app /Applications/
 
 > 본인 터미널이 기본 목록에 없으면 Typing 페이지의 "감지 대상 앱 (Bundle ID)" 섹션에서 추가.
 
+> 🔒 **Privacy**: ClaudePet은 키 입력 **발생 여부**만 사용하며 **키 코드/내용을 캡처하지도, 저장하지도, 전송하지도 않습니다**. 구현 참고: [`KeystrokeMonitor.swift`](ClaudePet/Services/KeystrokeMonitor.swift) (`handleKeyDown`에서 `NSEvent` 파라미터를 `_`로 무시). 또한 등록된 bundle ID의 앱이 frontmost일 때만 이벤트를 카운트합니다.
+
 ---
 
 ## ⚙️ Preferences
@@ -218,9 +220,20 @@ mv ~/Downloads/ClaudePet.app /Applications/
 | `PreToolUse` | `tool` | 2초간 tool 모션 (도구 이름별 스타일) |
 | `PostToolUse` | `permission_resolved` | permission 오버레이 해제 |
 
-**공통 필드**: `session` (세션 ID), `label` (cwd 또는 도구 이름), `hook` (원본 훅 이름). 훅별 추가 필드: `message`, `tool` 등.
+**공통 필드**: `session` (세션 ID), `label` (cwd 또는 도구 이름), `hook` (원본 훅 이름). 훅별 추가 필드: `tool` 등.
 
 > `PermissionRequest` / `PermissionDenied`는 Claude Code 공식 훅 이벤트입니다. Notification 키워드 분기는 안전망(이중 보호)으로 함께 유지합니다.
+
+### ⚠️ 훅 직접 편집 시 보안 주의사항
+
+`settings.json`의 hook command를 본인 환경에 맞게 수정하실 때 **다음 규칙을 반드시 지켜주세요**:
+
+1. **모든 변수 치환은 반드시 큰따옴표로 감싸기**: `"$INPUT"` ✅ / `$INPUT` ❌
+   - quoting을 빼면 Claude가 보낸 메시지 안의 셸 메타문자(`$()`, `` ` ``, `;`, `|`)가 평가됩니다 = **임의 코드 실행 위험**.
+2. **`echo` 대신 `printf '%s'` 사용** (백슬래시 이스케이프 해석 차이로 인한 깨짐 방지)
+3. **payload는 `--data-binary @-`로 stdin 전달** (xargs 길이 제한 + 이스케이프 사고 회피)
+
+기본 제공된 `.claude/settings.json`은 이 규칙을 모두 지키고 있습니다. 수정하실 땐 패턴을 그대로 따라가세요.
 
 ---
 
