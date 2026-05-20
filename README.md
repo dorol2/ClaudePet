@@ -1,7 +1,7 @@
 <h1 align="center">🐾 ClaudePet</h1>
 
 <p align="center">
-  <img src="ClaudePet/Samples/idle.png" width="160" alt="ClaudePet idle (Cody)">
+  <img src="ClaudePet/Samples/idle.png" width="160" alt="ClaudePet idle (Claunyang / 클로냥)">
 </p>
 
 <p align="center">
@@ -78,7 +78,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 
 > 빌트인 테마 2종 제공:
 > - **Default** — 이모지 + 그라데이션 배경 (이미지 없음, 기본 활성)
-> - **Cody** — 자체 제작 펫 캐릭터 이미지 7종 자동 적용
+> - **클로냥 (Claunyang)** — 자체 제작 펫 캐릭터 이미지 7종 자동 적용
 >
 > 본인 이미지/GIF로 커스텀 테마 만드는 것도 Preferences에서 가능합니다.
 
@@ -86,7 +86,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 
 ## 🎬 모션 미리보기
 
-빌트인 `Cody` 테마의 모션별 이미지 (메뉴바 🐾 → Theme → Cody 선택 시 자동 적용):
+빌트인 `클로냥` 테마의 모션별 이미지 (메뉴바 🐾 → Theme → 클로냥 선택 시 자동 적용):
 
 <table>
   <tr>
@@ -142,7 +142,7 @@ mv ~/Downloads/ClaudePet.app /Applications/
 
 세 가지 방법:
 
-1. **빌트인 `Cody` 테마 바로 적용** — 메뉴바 🐾 → Theme → **Cody** 클릭. 캐릭터 7종이 자동 적용됨.
+1. **빌트인 `클로냥` 테마 바로 적용** — 메뉴바 🐾 → Theme → **클로냥** 클릭. 캐릭터 7종이 자동 적용됨.
 2. **본인 이미지/GIF 등록** — 메뉴바 🐾 → Preferences → 모션 (Idle/Waiting/Done/Tool/Thinking/Permission/Typing 각 페이지) → **"이미지 선택…"** 버튼으로 PNG/GIF/APNG/JPG 등 등록.
 3. **사용자 정의 테마 저장** — Preferences → **테마** 페이지의 "현재 설정 저장…"으로 묶어서 저장 → 메뉴바 🐾 → Theme 서브메뉴에서 빠르게 전환.
 
@@ -312,7 +312,7 @@ ClaudePet/                              ← 리포 루트
 │   │   ├── ImageStore.swift            이미지 영속 저장
 │   │   ├── ThemeStore.swift            사용자 정의 테마 영속 저장
 │   │   └── LogStore.swift              개발자 페이지용 로그 버퍼
-│   ├── Samples/                        빌트인 Cody 테마 이미지 (PNG 7장)
+│   ├── Samples/                        빌트인 클로냥(Claunyang) 테마 이미지 (PNG 7장)
 │   ├── Assets.xcassets/
 │   └── ClaudePet.entitlements
 ├── ClaudePetTests/                     unit tests (Swift Testing, 35개)
@@ -350,4 +350,4 @@ ClaudePet/                              ← 리포 루트
 
 별도 LICENSE 파일 추가 전까지는 개인 학습/사용 용도로 fork/수정 권장 (MIT 등 추후 추가 예정).
 
-> 번들 포함 빌트인 펫 캐릭터 (`Cody` — `ClaudePet/Samples/*.png`)는 본 리포 작성자가 직접 제작했으며, 코드 라이선스에 함께 따릅니다. 본인 이미지/GIF로 교체하고 싶으면 Preferences에서 등록 가능.
+> 번들 포함 빌트인 펫 캐릭터 (`클로냥 / Claunyang` — `ClaudePet/Samples/*.png`)는 본 리포 작성자가 직접 제작했으며, 코드 라이선스에 함께 따릅니다. 본인 이미지/GIF로 교체하고 싶으면 Preferences에서 등록 가능.
