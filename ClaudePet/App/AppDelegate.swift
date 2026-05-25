@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var keystrokeBundleObserver: AnyCancellable?
     private var durationObserver: AnyCancellable?
     private var petSizeObserver: AnyCancellable?
+    private var bubbleHeightObserver: AnyCancellable?
     private var themeIdObserver: AnyCancellable?
     private var userThemesObserver: AnyCancellable?
     private var themesSubmenu: NSMenu?
@@ -42,23 +43,50 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - PetSize 동기화
+    // MARK: - PetSize / 말풍선 높이에 따른 패널 사이징
 
     private func setupPetSizeSync() {
         petSizeObserver = theme.$petSize
             .removeDuplicates()
             .dropFirst()    // 초기값은 setupPanel이 이미 사용
-            .sink { [weak self] newSize in
-                Task { @MainActor in self?.resizePanel(to: newSize) }
+            .sink { [weak self] _ in
+                Task { @MainActor in self?.applyPanelSize() }
+            }
+        // 말풍선이 기본 영역보다 커지면(예: waiting label 여러 개, 긴 라벨) 패널을 확장.
+        bubbleHeightObserver = state.$measuredBubbleSize
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                Task { @MainActor in self?.applyPanelSize() }
             }
     }
 
-    private func resizePanel(to size: PetSize) {
+    /// 현재 petSize의 기본 패널 크기 + 말풍선이 기본 영역을 넘은 만큼을 더해 패널을 리사이즈.
+    /// 높이는 origin.y 유지로 캐릭터 위치를 고정한 채 위로 확장하고,
+    /// 폭은 panel midX를 유지하여 캐릭터 X 위치가 흔들리지 않게 한다.
+    /// visibleFrame을 벗어나면 clamp.
+    private func applyPanelSize() {
         guard let panel = self.panel else { return }
+        let size = theme.petSize
+        // PetView 외곽 padding 8pt × 2 = 16
+        let baseBubbleRoomW = size.panelWidth - 16
+        let baseBubbleRoomH = size.panelHeight - size.characterSize - 16
+        let measured = state.measuredBubbleSize
+        let extraW = max(0, measured.width - baseBubbleRoomW)
+        let extraH = max(0, measured.height - baseBubbleRoomH)
+        let newW = size.panelWidth + extraW
+        let newH = size.panelHeight + extraH
+
         let oldFrame = panel.frame
-        let newSize = NSSize(width: size.panelWidth, height: size.panelHeight)
-        // origin.y는 바닥 기준이므로 그대로 둠 → 패널 바닥 위치 유지, 위쪽이 늘어남/줄어듦
-        let newFrame = NSRect(origin: oldFrame.origin, size: newSize)
+        // midX 유지로 캐릭터 X 안 흔들리게.
+        var newOriginX = oldFrame.midX - newW / 2
+        // 화면 가장자리 clamp (현재 panel이 속한 screen의 visibleFrame 기준).
+        if let screen = panel.screen ?? NSScreen.main {
+            let v = screen.visibleFrame
+            // 패널이 화면 폭보다 클 경우 minX를 시작점으로
+            let maxOriginX = max(v.minX, v.maxX - newW)
+            newOriginX = min(max(newOriginX, v.minX), maxOriginX)
+        }
+        let newFrame = NSRect(x: newOriginX, y: oldFrame.minY, width: newW, height: newH)
         panel.setFrame(newFrame, display: true, animate: false)
     }
 

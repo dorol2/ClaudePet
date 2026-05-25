@@ -20,6 +20,9 @@ final class PetState: ObservableObject {
     @Published private(set) var currentToolName: String?
     @Published private(set) var isThinking: Bool = false
     @Published private(set) var thinkingVerbIndex: Int = 0
+    /// PetView가 SwiftUI PreferenceKey로 보고하는 현재 말풍선 자연 크기(꼬리 포함).
+    /// AppDelegate가 이 값으로 NSPanel 폭/높이를 동적으로 확장한다.
+    @Published var measuredBubbleSize: CGSize = .zero
 
     // 모션 활성 플래그 (timer.isValid 대체)
     @Published private(set) var isDoneActive: Bool = false

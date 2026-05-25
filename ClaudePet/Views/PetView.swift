@@ -1,6 +1,16 @@
 // PetView.swift
 import SwiftUI
 
+/// 말풍선의 현재 자연 크기(꼬리 포함)를 PetState로 전달하는 PreferenceKey.
+/// AppDelegate가 이를 받아 NSPanel 폭/높이를 동적으로 확장한다.
+private struct BubbleSizeKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        let next = nextValue()
+        if next != .zero { value = next }
+    }
+}
+
 struct PetView: View {
     @EnvironmentObject var state: PetState
     @EnvironmentObject var theme: PetTheme
@@ -34,6 +44,11 @@ struct PetView: View {
         .onReceive(Timer.publish(every: 1.0 / 6.0, on: .main, in: .common).autoconnect()) { _ in
             frameIndex &+= 1
         }
+        .onPreferenceChange(BubbleSizeKey.self) { size in
+            // SwiftUI는 onPreferenceChange를 main thread에서 호출하지만, Swift 6
+            // strict concurrency를 통과하려면 @MainActor isolation을 명시.
+            Task { @MainActor in state.measuredBubbleSize = size }
+        }
     }
 
     // MARK: - 말풍선
@@ -57,16 +72,28 @@ struct PetView: View {
                             .strokeBorder(Color.white.opacity(0.65), lineWidth: 1)
                     )
                     .shadow(color: .black.opacity(0.18), radius: 8, x: 0, y: 3)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: 200)
+                    // 라벨이 길어도 한 줄 유지를 위해 폭 상한을 넉넉히. 이 안에서 자연 폭으로
+                    // 측정되고, AppDelegate가 그 폭에 맞춰 NSPanel을 확장한다.
+                    // 순서 중요: frame(maxWidth:)를 먼저 두어 wrap 한도를 정하고,
+                    // fixedSize(horizontal: true)로 부모(panel) 폭 제약을 무시해 자연 폭으로 그린다.
+                    // 그 자연 폭이 PreferenceKey로 측정되어 panel 자체를 확장하는 트리거가 된다.
+                    .frame(maxWidth: 500)
+                    .fixedSize(horizontal: true, vertical: true)
                 BubbleTail()
                     .fill(.regularMaterial)
                     .frame(width: 14, height: 7)
                     .shadow(color: .black.opacity(0.10), radius: 2, x: 0, y: 2)
             }
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(key: BubbleSizeKey.self, value: proxy.size)
+                }
+            )
             .transition(.opacity)
         } else {
-            Color.clear.frame(height: 0)
+            Color.clear
+                .frame(height: 0)
+                .preference(key: BubbleSizeKey.self, value: .zero)
         }
     }
 
