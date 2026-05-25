@@ -23,7 +23,7 @@ ClaudePet은 데스크탑 위에 떠다니며 **Claude Code 세션의 상태**(�
 긴 작업을 시작하고 자리를 비워도 펫이 모션으로 알려주고, 권한 요청이 오면 색이 바뀌고, 응답이 끝나면 축하 모션을 보여줍니다. 색·이모지·이미지·말풍선 등을 모두 사용자 정의할 수 있습니다.
 
 <p align="center">
-  <img src="docs/demo.gif" width="640" alt="ClaudePet demo">
+  <img src="docs/demo.gif" width="160" alt="ClaudePet demo">
 </p>
 
 ## 📑 목차
