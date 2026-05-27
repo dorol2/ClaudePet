@@ -14,15 +14,6 @@ private struct BubbleSizeKey: PreferenceKey {
 struct PetView: View {
     @EnvironmentObject var state: PetState
     @EnvironmentObject var theme: PetTheme
-    @State private var frameIndex = 0
-
-    // Asset Catalog에 idle_01..idle_04, waiting_01..waiting_04, done_01..done_04 식으로 넣기.
-    // sprite가 없으면 통통한 폴백으로 표시.
-    private let framesPerMotion: [Motion: [String]] = [
-        .idle:    ["idle_01", "idle_02", "idle_03", "idle_04"],
-        .waiting: ["waiting_01", "waiting_02", "waiting_03", "waiting_04"],
-        .done:    ["done_01", "done_02", "done_03", "done_04"],
-    ]
 
     var body: some View {
         // NSHostingView가 SwiftUI intrinsic으로 자동 사이징되는 걸 막기 위해
@@ -39,10 +30,6 @@ struct PetView: View {
             }
             .padding(8)
             .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
-        }
-        // sprite 프레임 교체 타이머. 캐릭터 자체 움직임은 전부 sprite에 의존.
-        .onReceive(Timer.publish(every: 1.0 / 6.0, on: .main, in: .common).autoconnect()) { _ in
-            frameIndex &+= 1
         }
         .onPreferenceChange(BubbleSizeKey.self) { size in
             // SwiftUI는 onPreferenceChange를 main thread에서 호출하지만, Swift 6
@@ -144,16 +131,12 @@ struct PetView: View {
 
     @ViewBuilder
     private var character: some View {
-        // 우선순위: 사용자 지정 이미지(GIF 포함) > Asset Catalog sprite > 폴백 이모지
+        // 우선순위: 사용자 지정 이미지(GIF/APNG 포함) > 폴백 이모지 placeholder
+        // GIF/APNG는 NSImageView.animates = true가 자체 재생하므로 외부 timer 불필요.
         // 이미지가 짤리지 않도록 외곽 128x128 프레임 전체를 사용.
         // NSImageView의 imageAlignment(.alignBottom)이 이미지 비율 차이를 흡수.
         if let path = customImagePath() {
             AnimatedImageView(filePath: path)
-        } else if let img = currentSpriteImage() {
-            Image(nsImage: img)
-                .resizable()
-                .interpolation(.none)
-                .aspectRatio(contentMode: .fit)
         } else {
             placeholder
         }
@@ -199,12 +182,6 @@ struct PetView: View {
             Text(motionEmoji)
                 .font(.system(size: s * 0.406))
         }
-    }
-
-    private func currentSpriteImage() -> NSImage? {
-        guard let names = framesPerMotion[state.motion], !names.isEmpty else { return nil }
-        let name = names[frameIndex % names.count]
-        return NSImage(named: name)
     }
 
     private var placeholderColors: [Color] {
